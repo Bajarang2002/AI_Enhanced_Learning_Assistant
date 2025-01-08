@@ -77,4 +77,4 @@ class SubjectiveTest:
                 ans.append(question_answer[rand_num]["Answer"])
             else:
                 continue
-        return que, ans
+        return que,ans   
