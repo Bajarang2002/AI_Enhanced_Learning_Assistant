@@ -2,24 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AI Learning Assistant</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
+    /* CSS Theme Variables */
+    :root {
+      --primary-color: #800000;
+      --primary-hover: #550000;
+      --sidebar-bg: #4a0000;
+      --sidebar-hover: #330000;
+      --accent-color: #f59e0b;
+      --navbar-bg: #800000;
+      --body-bg: #f8fafc;
+      --card-border: #e2e8f0;
+    }
+
+    [data-theme="indigo"] {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b;
+      --accent-color: #06b6d4;
+      --navbar-bg: #0f172a;
+      --body-bg: #f1f5f9;
+      --card-border: #cbd5e1;
+    }
+
+    [data-theme="ocean"] {
+      --primary-color: #0284c7;
+      --primary-hover: #0369a1;
+      --sidebar-bg: #0c4a6e;
+      --sidebar-hover: #075985;
+      --accent-color: #38bdf8;
+      --navbar-bg: #0c4a6e;
+      --body-bg: #f0f9ff;
+      --card-border: #bae6fd;
+    }
+
+    [data-theme="minimal"] {
+      --primary-color: #10b981;
+      --primary-hover: #059669;
+      --sidebar-bg: #1e293b;
+      --sidebar-hover: #334155;
+      --accent-color: #10b981;
+      --navbar-bg: #1e293b;
+      --body-bg: #f8fafc;
+      --card-border: #e2e8f0;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     body {
-      background-color: #f4f4f4;
+      background-color: var(--body-bg);
+      color: #1e293b;
+      transition: background-color 0.3s ease;
+      overflow-x: hidden;
     }
 
+    /* Modern Navbar */
     .dashboard-navbar {
-      background-color:  #800000;
+      background-color: var(--navbar-bg);
       color: #fff;
-      padding: 10px 20px;
+      padding: 10px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -27,300 +84,628 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 60px;
+      height: 64px;
       z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+      transition: background-color 0.3s ease;
     }
 
-    .nav-right {
+    .brand-group {
       display: flex;
       align-items: center;
-    }
-    .rounded-circle{
-      border-radius: 20px;
-    }
-    .profile-pic {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-      cursor: pointer;
-      border: 2px solid white;
-
+      gap: 12px;
     }
 
-    .upload-profile {
-      display: none;
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      color: #fff;
     }
 
-    .username {
-      font-weight: bold;
-      font-size: 16px;
-      margin-left: 15px;
+    .navbar-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
     }
 
+    /* Sidebar */
     .dashboard-sidebar {
       position: fixed;
-      top: 60px;
+      top: 64px;
       left: 0;
-      width: 220px;
-      height: calc(100vh - 60px);
-      background-color: #550000;
+      width: 260px;
+      height: calc(100vh - 64px);
+      background-color: var(--sidebar-bg);
       color: #ffffff;
-      padding-top: 20px;
-    }
-
-    .dashboard-sidebar ul {
-      list-style: none;
-    }
-
-    .dashboard-sidebar ul li {
-      padding: 15px 20px;
-      border-bottom: 1px solid #333;
-    }
-
-    .dashboard-sidebar ul li a {
-      color: #fff;
-      text-decoration: none;
-      display: block;
-      transition: background 0.3s;
-    }
-
-    .dashboard-sidebar ul li a:hover {
-      background-color: #444;
-    }
-
-    .dashboard-main {
-      margin-left: 220px;
-      background-color: #fdfdfe;
-      margin-top: 60px;
-      height: calc(100vh - 60px);
+      padding-top: 18px;
       overflow-y: auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
+      transition: all 0.3s ease;
+      z-index: 999;
     }
 
-    .welcome-message {
-      max-width: 600px;
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
-    .welcome-message h3{
-      margin-bottom: 30px;
-       
+
+    .sidebar-menu li {
+      margin-bottom: 3px;
     }
-    .disabled {
-      pointer-events: none;
-      opacity: 0.5;
+
+    .sidebar-menu li a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 13px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border-left: 4px solid transparent;
+      white-space: nowrap;
+    }
+
+    .sidebar-menu li a i {
+      color: var(--accent-color);
+      font-size: 16px;
+      width: 26px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-menu li a:hover,
+    .sidebar-menu li a.active {
+      background-color: var(--sidebar-hover);
+      color: #ffffff;
+      border-left-color: var(--accent-color);
+    }
+
+    /* Main Viewport - Perfectly Contained Layout */
+    .dashboard-main {
+      margin-left: 260px;
+      margin-top: 64px;
+      min-height: calc(100vh - 64px);
+      padding: 30px;
+      background-color: var(--body-bg);
+      max-width: calc(100% - 260px);
+      width: calc(100% - 260px);
+      box-sizing: border-box;
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .welcome-card {
+      max-width: 1200px;
+      width: 100%;
+      margin: 10px auto;
+      background: white;
+      border-radius: 18px;
+      padding: 35px 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--card-border);
+      box-sizing: border-box;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .feature-tile {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .feature-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary-color);
+    }
+
+    .tile-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(128, 0, 0, 0.08);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      white-space: nowrap;
+    }
+
+    /* Responsive Adjustments to Guarantee Layout Integrity */
+    @media (max-width: 991.98px) {
+      .dashboard-sidebar {
+        width: 68px;
+      }
+      .dashboard-sidebar .sidebar-menu li a span {
+        display: none;
+      }
+      .dashboard-sidebar .sidebar-menu li a {
+        justify-content: center;
+        padding: 14px 10px;
+      }
+      .dashboard-sidebar .sidebar-menu li a i {
+        margin: 0;
+        width: auto;
+        font-size: 19px;
+      }
+      .dashboard-main {
+        margin-left: 68px;
+        max-width: calc(100% - 68px);
+        width: calc(100% - 68px);
+        padding: 20px 15px;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .dashboard-sidebar {
+        transform: translateX(-100%);
+      }
+      .dashboard-main {
+        margin-left: 0;
+        max-width: 100%;
+        width: 100%;
+        padding: 16px 12px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Top Navigation Bar -->
   <nav class="dashboard-navbar">
-    <div class="nav-left">
-      <h2>My Dashboard</h2>
+    <div class="brand-group">
+      <div class="brand-icon">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <div>
+        <h1 class="navbar-title">AI Learning Assistant</h1>
+      </div>
     </div>
-    <div class="nav-right">
-      <label for="uploadProfile">
-        <!-- <img src="{{ url_for('static', filename=session.get('profile_image', 'profile_images/default.png')) }}" alt="Profile" class="profile-pic" id="profileImage"> -->
-        <img src="{{ session['profile_image'] }}" alt="Profile" id="navbarProfileImage" class="rounded-circle" width="40" height="40">
 
-      </label>
-      <input type="file" id="uploadProfile" class="upload-profile" accept="image/*">
-      <span class="username">{{ session.get('first_name', 'User') }}</span>
+    <!-- Center/Right Action Controls -->
+    <div class="d-flex align-items-center gap-2 gap-md-3">
+      <!-- JWT Active Badge -->
+      <span class="status-badge text-white d-none d-sm-inline-flex" style="background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.25);">
+        <i class="fas fa-lock text-warning"></i> JWT Active (HS256)
+      </span>
+
+      <!-- User Profile Dropdown Menu (Sign Out Placed Below Profile) -->
+      <div class="dropdown ps-2 border-start border-white-50">
+        <button class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-1" 
+                type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: none;">
+          <div id="navbarProfileContainer" class="d-flex align-items-center gap-2">
+            {% if session.get('profile_image') and is_custom_avatar(session.get('profile_image')) %}
+              <img src="{{ user_avatar_url(session.get('profile_image')) }}"
+                   alt="Profile Photo" id="navbarProfileImage" class="rounded-circle border border-white" width="36" height="36" style="object-fit: cover;">
+              <span class="text-sm fw-bold d-none d-md-inline text-white">{{ session.get('first_name', 'User') }}</span>
+            {% else %}
+              <div id="navbarProfileImage" class="rounded-circle border border-white d-flex align-items-center justify-content-center text-white" 
+                   style="width: 36px; height: 36px; background: rgba(255, 255, 255, 0.25);" title="Profile">
+                <i class="fas fa-user-circle fa-lg"></i>
+              </div>
+              <span class="text-sm fw-bold d-none d-md-inline text-white">{{ session.get('first_name', 'User') }}</span>
+            {% endif %}
+          </div>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg py-2 mt-2" aria-labelledby="profileDropdown" style="min-width: 230px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);">
+          <li class="px-3 py-2 border-bottom">
+            <div class="fw-bold text-dark text-truncate">{{ session.get('first_name', '') }} {{ session.get('last_name', '') }}</div>
+            <div class="text-muted text-xs text-truncate">@{{ session.get('username', 'user') }}</div>
+            <div class="text-muted text-xs text-truncate">{{ session.get('email', '') }}</div>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 text-sm" href="#" onclick="document.getElementById('updateProfileBtn').click(); return false;">
+              <i class="fas fa-user-edit text-primary me-2"></i> Update Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 text-sm" href="#" onclick="document.getElementById('settingsBtn').click(); return false;">
+              <i class="fas fa-sliders-h text-secondary me-2"></i> Settings & Password
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li>
+            <a class="dropdown-item py-2 text-sm text-danger fw-semibold" href="{{ url_for('logout') }}">
+              <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <!-- Sidebar -->
+  <!-- Left Sidebar (Sidebar Sign Out Removed As Requested) -->
   <aside class="dashboard-sidebar">
-    <!-- <ul>
-      <li><a href="#" id="uploadFileBtn">Upload File</a></li>
+    <ul class="sidebar-menu">
       <li>
-        <a href="#" id="genQuestionBtn" class="disabled" style="pointer-events: none; opacity: 0.5;">
-          Generate Questions
-        </a>
-      </li>
-      <li><a href="#" id="evalAnswerBtn">Answer Evaluation</a></li>
-      <li><a href="#" id="updateProfileBtn">Update Profile</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul> -->
-    <ul>
-      <li>
-        <a href="#" id="uploadFileBtn">
-          <i class="fas fa-upload" style="color:gold; margin-right:8px;"></i> Upload File
+        <a href="#" id="homeNavBtn" class="active">
+          <i class="fas fa-home"></i> <span>Dashboard Home</span>
         </a>
       </li>
       <li>
-        <a href="#" id="genQuestionBtn" class="disabled" style="pointer-events: none; opacity: 0.5;">
-          <i class="fas fa-question-circle" style="color:gold; margin-right:8px;"></i> Generate Questions
+        <a href="#" id="uploadTrainBtn">
+          <i class="fas fa-brain"></i> <span>Train RNN/LSTM</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" id="modelAccuracyBtn">
+          <i class="fas fa-chart-line"></i> <span>Model Accuracy</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" id="genQuestionBtn">
+          <i class="fas fa-question-circle"></i> <span>Generate Questions</span>
         </a>
       </li>
       <li>
         <a href="#" id="evalAnswerBtn">
-          <i class="fas fa-file-alt" style="color:gold; margin-right:8px;"></i> Answer Evaluation
+          <i class="fas fa-balance-scale"></i> <span>Answer Evaluation</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" id="settingsBtn">
+          <i class="fas fa-sliders-h"></i> <span>Settings & Password</span>
         </a>
       </li>
       <li>
         <a href="#" id="updateProfileBtn">
-          <i class="fas fa-user-edit" style="color:gold; margin-right:8px;"></i> Update Profile
-        </a>
-      </li>
-      <li>
-        <a href="{{ url_for('logout') }}">
-          <i class="fas fa-sign-out-alt" style="color:gold; margin-right:8px;"></i> Logout
+          <i class="fas fa-user-edit"></i> <span>Update Profile</span>
         </a>
       </li>
     </ul>
-    
   </aside>
 
-  <!-- Main Content -->
+  <!-- Main Viewport -->
   <main class="dashboard-main" id="mainContent">
-    <div class="welcome-message">
-      <h3>Welcome to your dashboard, {{ session.get('first_name', 'User') }}!</h3>
-      <p>Select an option from the sidebar to get started.</p>
+    <div class="welcome-card">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+          <h2 class="fw-bold mb-1" style="color: var(--primary-color);">
+            Welcome, {{ session.get('first_name', 'Student') }}!
+          </h2>
+          <p class="text-muted text-sm mb-0">Your deep learning workspace is active and secured with JWT session authentication.</p>
+        </div>
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 text-xs fw-bold">
+          <i class="fas fa-check-circle me-1"></i> System Online
+        </span>
+      </div>
+
+      <hr class="my-4 text-muted opacity-25">
+
+      <!-- 4 Quick-Action Feature Tiles with Proper Responsive Grid -->
+      <div class="row g-3 g-xl-4 text-start">
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="feature-tile" onclick="document.getElementById('uploadTrainBtn').click()">
+            <div>
+              <div class="tile-icon-box">
+                <i class="fas fa-brain"></i>
+              </div>
+              <h5 class="fw-bold text-base mb-1">1. Train Model</h5>
+              <p class="text-muted text-xs mb-0">Upload training files and train PyTorch LSTM / RNN / BiLSTM networks.</p>
+            </div>
+            <span class="text-xs fw-bold mt-4" style="color: var(--primary-color);">Open Trainer &rarr;</span>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="feature-tile" onclick="document.getElementById('modelAccuracyBtn').click()">
+            <div>
+              <div class="tile-icon-box" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h5 class="fw-bold text-base mb-1">2. Model Accuracy</h5>
+              <p class="text-muted text-xs mb-0">Review training loss convergence curves and performance records.</p>
+            </div>
+            <span class="text-xs fw-bold mt-4 text-success">View Metrics &rarr;</span>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="feature-tile" onclick="document.getElementById('genQuestionBtn').click()">
+            <div>
+              <div class="tile-icon-box" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              <h5 class="fw-bold text-base mb-1">3. Generate Q&A</h5>
+              <p class="text-muted text-xs mb-0">Synthesize government-exam MCQs and comprehensive detailed solutions.</p>
+            </div>
+            <span class="text-xs fw-bold mt-4 text-warning">Generate Now &rarr;</span>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="feature-tile" onclick="document.getElementById('evalAnswerBtn').click()">
+            <div>
+              <div class="tile-icon-box" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+                <i class="fas fa-balance-scale"></i>
+              </div>
+              <h5 class="fw-bold text-base mb-1">4. Answer Evaluation</h5>
+              <p class="text-muted text-xs mb-0">Upload Reference Answer Key and Student Sheet to compare and score.</p>
+            </div>
+            <span class="text-xs fw-bold mt-4 text-primary">Evaluate Sheet &rarr;</span>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
-<script>
-  document.getElementById('uploadFileBtn').addEventListener('click', function(event) {
-    event.preventDefault();
-    fetch("{{ url_for('upload') }}")
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById("mainContent").innerHTML = html;
-        const uploadForm = document.getElementById("uploadForm");
+  <!-- Dynamic Loader JavaScript -->
+  <script>
+    function setActiveLink(linkId) {
+      document.querySelectorAll('.sidebar-menu li a').forEach(a => a.classList.remove('active'));
+      const target = document.getElementById(linkId);
+      if (target) target.classList.add('active');
+    }
 
-        if (uploadForm) {
-          uploadForm.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(uploadForm);
+    // Apply Theme dynamically across dashboard
+    function applyTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      document.body.setAttribute('data-theme', themeName);
+      localStorage.setItem('app_theme', themeName);
+      document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+      const activeCard = document.getElementById('theme-' + themeName);
+      if (activeCard) activeCard.classList.add('active');
+    }
+    window.applyTheme = applyTheme;
+    window.setAppTheme = applyTheme;
 
-            fetch(uploadForm.action, {
-              method: "POST",
-              body: formData
-            })
-            .then(response => {
-              if (!response.ok) throw new Error("Upload failed");
-              return fetch("{{ url_for('train_model') }}");
-            })
-            .then(res => res.text())
-            .then(html => {
-              document.getElementById("mainContent").innerHTML = html;
-              const trainBtn = document.getElementById("trainModelBtn");
+    // Load persisted theme
+    const savedTheme = localStorage.getItem('app_theme') || 'crimson';
+    applyTheme(savedTheme);
 
-              if (trainBtn) {
-                trainBtn.addEventListener("click", function () {
-                  alert("Model trained successfully!");
-                  const genBtn = document.getElementById("genQuestionBtn");
-                  genBtn.classList.remove("disabled");
-                  genBtn.style.pointerEvents = "auto";
-                  genBtn.style.opacity = "1";
-                });
-              }
-            })
-            .catch(err => console.error("Error:", err));
-          });
-        }
-      });
-  });
+    // Initial Welcome HTML Cache
+    const initialWelcomeHtml = document.getElementById('mainContent').innerHTML;
 
-  // document.getElementById('genQuestionBtn').addEventListener('click', function(event) {
-  //   if (this.classList.contains('disabled')) return;
-  //   event.preventDefault();
-  //   fetch("{{ url_for('question_generation') }}")
-  //     .then(response => response.text())
-  //     .then(html => {
-  //       document.getElementById("mainContent").innerHTML = html;
-  //     });
-  // });
-  document.getElementById('genQuestionBtn').addEventListener('click', function(event) {
-  if (this.classList.contains('disabled')) return;
-  event.preventDefault();
-  fetch("/load_question_generation")
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById("mainContent").innerHTML = html;
+    // Home Nav Button
+    document.getElementById('homeNavBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('homeNavBtn');
+      document.getElementById('mainContent').innerHTML = initialWelcomeHtml;
     });
-});
 
-
-  document.getElementById('evalAnswerBtn').addEventListener('click', function(event) {
-    event.preventDefault();
-    fetch("{{ url_for('eval_upload') }}")
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById("mainContent").innerHTML = html;
-        const evalForm = document.getElementById("evalAnswerForm");
-        if (evalForm) {
-          evalForm.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(evalForm);
-            fetch(evalForm.action, {
-              method: "POST",
-              body: formData
-            })
-            .then(response => response.text())
-            .then(html => {
-              document.getElementById("mainContent").innerHTML = html;
-            });
-          });
-        }
-      });
-  });
-
-  document.getElementById('updateProfileBtn').addEventListener('click', function(event) {
-    event.preventDefault();
-    fetch("{{ url_for('update_profile') }}")
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById("mainContent").innerHTML = html;
-
-        const form = document.getElementById("updateProfileForm");
-        if (form) {
-          form.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-
-            fetch("/update_profile", {
-              method: "POST",
-              body: formData
-            })
-            .then(response => response.text())
-            .then(updatedHtml => {
-              document.getElementById("mainContent").innerHTML = updatedHtml;
-
-              const newDoc = new DOMParser().parseFromString(updatedHtml, "text/html");
-              const newImg = newDoc.querySelector(".profile-preview");
-              const profileImg = document.getElementById("navbarProfileImage");
-              if (newImg && profileImg) {
-                profileImg.src = newImg.src + "?t=" + new Date().getTime(); // cache bust
-              }
-            });
-          });
-
-          // Instant preview of selected profile image inside the form
-          const fileInput = document.querySelector('input[name="profile_image"]');
-          const previewImg = document.getElementById("profilePreview");
-          if (fileInput && previewImg) {
-            fileInput.addEventListener("change", function() {
-              const file = this.files[0];
-              if (file && file.type.startsWith("image/")) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                  previewImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-              }
-            });
+    // 1. Train Model Section
+    document.getElementById('uploadTrainBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('uploadTrainBtn');
+      fetch("{{ url_for('upload_train') }}")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+          const scriptTags = document.getElementById('mainContent').getElementsByTagName('script');
+          for (let script of scriptTags) {
+            eval(script.innerText);
           }
-        }
-      });
-  });
-</script>
+          attachTrainFormListener();
+        })
+        .catch(err => console.error(err));
+    });
 
+    function attachTrainFormListener() {
+      // Expose selectAlgo globally so all three models (LSTM, RNN, BiLSTM) are accessible
+      window.selectAlgo = function(type) {
+        document.querySelectorAll('.algo-card').forEach(b => b.classList.remove('selected'));
+        const radio = document.querySelector(`input[name="model_type"][value="${type}"]`);
+        if (radio) {
+          radio.checked = true;
+        }
+        if (type === 'LSTM') {
+          const el = document.getElementById('algo_lstm_label');
+          if (el) el.classList.add('selected');
+        } else if (type === 'RNN') {
+          const el = document.getElementById('algo_rnn_label');
+          if (el) el.classList.add('selected');
+        } else if (type === 'BiLSTM') {
+          const el = document.getElementById('algo_bilstm_label');
+          if (el) el.classList.add('selected');
+        }
+      };
+
+      // Ensure radio button clicks directly trigger card selection
+      document.querySelectorAll('input[name="model_type"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          window.selectAlgo(this.value);
+        });
+      });
+
+      const form = document.getElementById('trainForm');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const spinner = document.getElementById('trainingSpinner');
+          const submitBtn = document.getElementById('startTrainBtn');
+          if (submitBtn) submitBtn.style.display = 'none';
+          if (spinner) spinner.style.display = 'block';
+
+          const formData = new FormData(form);
+          fetch("{{ url_for('upload_train') }}", {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.text())
+          .then(html => {
+            document.getElementById('mainContent').innerHTML = html;
+            const scriptTags = document.getElementById('mainContent').getElementsByTagName('script');
+            for (let script of scriptTags) {
+              eval(script.innerText);
+            }
+            attachTrainFormListener();
+          })
+          .catch(err => {
+            console.error(err);
+            if (spinner) spinner.style.display = 'none';
+            if (submitBtn) submitBtn.style.display = 'block';
+          });
+        });
+      }
+    }
+
+    // 2. Model Accuracy Section
+    document.getElementById('modelAccuracyBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('modelAccuracyBtn');
+      fetch("{{ url_for('model_accuracy') }}")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+          const scriptTags = document.getElementById('mainContent').getElementsByTagName('script');
+          for (let script of scriptTags) {
+            eval(script.innerText);
+          }
+        })
+        .catch(err => console.error(err));
+    });
+
+    // 3. Generate Questions Section
+    document.getElementById('genQuestionBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('genQuestionBtn');
+      fetch("/load_question_generation")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+        })
+        .catch(err => console.error(err));
+    });
+
+    // 4. Answer Evaluation Section
+    document.getElementById('evalAnswerBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('evalAnswerBtn');
+      fetch("{{ url_for('eval_upload') }}")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+        })
+        .catch(err => console.error(err));
+    });
+
+    // 5. Settings Section
+    document.getElementById('settingsBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('settingsBtn');
+      fetch("{{ url_for('settings_view') }}")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+          const scriptTags = document.getElementById('mainContent').getElementsByTagName('script');
+          for (let script of scriptTags) {
+            eval(script.innerText);
+          }
+        })
+        .catch(err => console.error(err));
+    });
+
+    function attachUpdateProfileListeners() {
+      const scriptTags = document.getElementById('mainContent').getElementsByTagName('script');
+      for (let script of scriptTags) {
+        try { eval(script.innerText); } catch (e) { console.error('Script eval error:', e); }
+      }
+
+      const form = document.getElementById("updateProfileForm");
+      if (form) {
+        form.addEventListener("submit", function(ev) {
+          ev.preventDefault();
+          const formData = new FormData(form);
+          const submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving Profile...';
+          }
+
+          fetch("/update_profile", {
+            method: "POST",
+            body: formData
+          })
+          .then(res => res.text())
+          .then(updatedHtml => {
+            document.getElementById('mainContent').innerHTML = updatedHtml;
+            attachUpdateProfileListeners();
+            const newDoc = new DOMParser().parseFromString(updatedHtml, "text/html");
+            const newImg = newDoc.querySelector(".profile-preview");
+            const navContainer = document.getElementById("navbarProfileContainer");
+            const firstName = document.getElementById('first_name') ? document.getElementById('first_name').value : '{{ session.get("first_name", "User") }}';
+            if (newImg && newImg.src && !newImg.src.includes('default.png') && newImg.style.display !== 'none' && navContainer) {
+              const bustCache = newImg.src + (newImg.src.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+              navContainer.innerHTML = `
+                <img src="${bustCache}" alt="Profile Photo" id="navbarProfileImage" class="rounded-circle border border-white" width="36" height="36" style="object-fit: cover;">
+                <span class="text-sm fw-bold d-none d-md-inline text-white">${firstName}</span>
+              `;
+            }
+          })
+          .catch(err => {
+            console.error('Profile update failed:', err);
+            const msgBox = document.getElementById('updateMessage');
+            if (msgBox) msgBox.innerHTML = '<div class="alert alert-danger text-center">Failed to update profile.</div>';
+          })
+          .finally(() => {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-save mr-1"></i> Save Changes';
+            }
+          });
+        });
+      }
+    }
+
+    // 6. Update Profile Section
+    document.getElementById('updateProfileBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveLink('updateProfileBtn');
+      fetch("{{ url_for('update_profile') }}")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainContent').innerHTML = html;
+          attachUpdateProfileListeners();
+        })
+        .catch(err => console.error(err));
+    });
+
+    // 7. Prevent browser Back button from navigating back to login page
+    (function() {
+      if (window.history && window.history.pushState) {
+        window.history.pushState('dashboard-root', null, window.location.href);
+        window.addEventListener('popstate', function(event) {
+          window.history.pushState('dashboard-root', null, window.location.href);
+        });
+      }
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

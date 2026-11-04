@@ -3,47 +3,86 @@
 <head>
     <title>Update Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
             background-color: #f9f9f9;
         }
 
         .profile-card {
-            max-width: 500px;
-            margin: 50px auto;
+            max-width: 520px;
+            width: 100%;
+            margin: 30px auto;
             background: white;
-            padding: 30px 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 35px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .profile-card h2 {
             text-align: center;
             color: maroon;
-            font-weight: 600;
-            margin-bottom: 25px;
+            font-weight: 700;
+            margin-bottom: 22px;
+            font-size: 24px;
         }
 
         .profile-card label {
-            font-weight: 500;
+            font-weight: 600;
             margin-top: 10px;
+            font-size: 14px;
+            color: #334155;
         }
 
-        .profile-card img {
+        .profile-preview-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .profile-logo-placeholder {
+            width: 104px;
+            height: 104px;
             border-radius: 50%;
-            margin-bottom: 10px;
-            border: 2px solid #ccc;
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .profile-preview-img {
+            width: 104px;
+            height: 104px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #800000;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .btn-custom {
             background-color: maroon;
             color: #fff;
-            font-weight: 500;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
             transition: 0.3s ease;
         }
 
         .btn-custom:hover {
-            background-color: #8b0000;
+            background-color: #550000;
+            color: #fff;
         }
 
         #updateMessage .alert {
@@ -53,49 +92,176 @@
 </head>
 <body>
 <div class="profile-card">
-    <h2>Update Profile</h2>
+    <h2><i class="fas fa-user-edit mr-2"></i> Update Profile</h2>
 
     {% if message %}
-        <div class="alert alert-success text-center" id="updateMessage">{{ message }}</div>
+        <div class="alert alert-success text-center py-2" id="updateMessage">
+            <i class="fas fa-check-circle mr-1"></i> {{ message }}
+        </div>
     {% else %}
         <div id="updateMessage"></div>
     {% endif %}
 
     <form id="updateProfileForm" enctype="multipart/form-data">
+        <div class="form-group text-center">
+            <div class="profile-preview-box">
+                {% if profile_image and is_custom_avatar(profile_image) %}
+                    <img src="{{ user_avatar_url(profile_image) }}" alt="Profile Photo" id="profilePreview" class="profile-preview-img profile-preview">
+                    <span id="profileStatusBadge" class="badge badge-success px-2 py-1 mb-2" style="font-size: 11px;">
+                        <i class="fas fa-check mr-1"></i> Custom Photo Set
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-1 mb-2" id="deletePhotoBtn" onclick="deleteProfilePhoto()">
+                        <i class="fas fa-trash-alt mr-1"></i> Delete Profile Photo
+                    </button>
+                    <div id="profileLogoPlaceholder" class="profile-logo-placeholder" style="display: none;">
+                        <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                    </div>
+                {% else %}
+                    <div id="profileLogoPlaceholder" class="profile-logo-placeholder">
+                        <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                    </div>
+                    <img src="" alt="Profile Photo" id="profilePreview" class="profile-preview-img profile-preview" style="display: none;">
+                    <span id="profileStatusBadge" class="badge badge-secondary px-2 py-1 mb-2" style="font-size: 11px;">
+                        <i class="fas fa-user mr-1"></i> Default Avatar
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-1 mb-2" id="deletePhotoBtn" onclick="deleteProfilePhoto()" style="display: none;">
+                        <i class="fas fa-trash-alt mr-1"></i> Delete Profile Photo
+                    </button>
+                {% endif %}
+            </div>
+
+            <label for="profile_image_file" class="d-block mb-1 font-weight-bold">Upload New Profile Photo:</label>
+            <input type="file" class="form-control-file mx-auto" style="max-width: 280px;" name="profile_image" id="profile_image_file" accept="image/*" onchange="previewImage(event)">
+            <small class="form-text text-muted mt-1">Upload a JPG or PNG photo to set it as your profile picture.</small>
+        </div>
+
         <div class="form-group">
             <label for="first_name">First Name:</label>
-            <input type="text" class="form-control" name="first_name" value="{{ first_name }}" required>
+            <input type="text" class="form-control" name="first_name" id="first_name" value="{{ first_name }}" required>
         </div>
 
         <div class="form-group">
             <label for="last_name">Last Name:</label>
-            <input type="text" class="form-control" name="last_name" value="{{ last_name }}" required>
+            <input type="text" class="form-control" name="last_name" id="last_name" value="{{ last_name }}" required>
         </div>
 
         <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" name="email" value="{{ email }}" required>
+            <label for="email">Email Address:</label>
+            <input type="email" class="form-control" name="email" id="email" value="{{ email }}" required>
         </div>
 
-        <div class="form-group text-center">
-            <label for="profile_image">Profile Image:</label><br>
-            <img src="{{ profile_image }}" alt="Profile Image" width="100" height="100" id="profilePreview" class="profile-preview mb-2"><br>
-            <input type="file" class="form-control-file mt-2" name="profile_image" accept="image/*" onchange="previewImage(event)">
-        </div>
+        <button type="submit" class="btn btn-custom btn-block mt-4">
+            <i class="fas fa-save mr-1"></i> Save Changes
+        </button>
 
-        <button type="submit" class="btn btn-custom btn-block mt-3">Update Profile</button>
+        <div class="text-center mt-3 pt-2 border-top">
+            <a href="#" onclick="if(document.getElementById('settingsBtn')){document.getElementById('settingsBtn').click();}else if(parent && parent.document.getElementById('settingsBtn')){parent.document.getElementById('settingsBtn').click();} return false;" class="text-muted" style="font-size: 13.5px; text-decoration: none; font-weight: 500;">
+                <i class="fas fa-sliders-h text-secondary mr-1"></i> Settings & Password &rarr;
+            </a>
+        </div>
     </form>
 </div>
 
 <script>
     function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function(){
-            const output = document.getElementById('profilePreview');
-            output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const previewImg = document.getElementById('profilePreview');
+                const placeholder = document.getElementById('profileLogoPlaceholder');
+                const badge = document.getElementById('profileStatusBadge');
+                const delBtn = document.getElementById('deletePhotoBtn');
+                
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+                if (badge) {
+                    badge.className = 'badge badge-primary px-2 py-1 mb-2';
+                    badge.innerHTML = '<i class="fas fa-image mr-1"></i> Ready to Set as Profile Image';
+                }
+                if (delBtn) delBtn.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
     }
+
+    function deleteProfilePhoto() {
+        if (!confirm('Are you sure you want to remove your profile photo?')) {
+            return;
+        }
+
+        const delBtn = document.getElementById('deletePhotoBtn');
+        if (delBtn) {
+            delBtn.disabled = true;
+            delBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Removing Photo...';
+        }
+
+        fetch('/delete_profile_image', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const previewImg = document.getElementById('profilePreview');
+                const placeholder = document.getElementById('profileLogoPlaceholder');
+                const badge = document.getElementById('profileStatusBadge');
+                const fileInput = document.getElementById('profile_image_file');
+
+                if (fileInput) fileInput.value = '';
+                if (previewImg) {
+                    previewImg.src = '';
+                    previewImg.style.display = 'none';
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                }
+                if (badge) {
+                    badge.className = 'badge badge-secondary px-2 py-1 mb-2';
+                    badge.innerHTML = '<i class="fas fa-user mr-1"></i> Default Avatar';
+                }
+                if (delBtn) {
+                    delBtn.style.display = 'none';
+                }
+
+                // Immediately update Navbar Profile Container to Default Avatar
+                const navContainer = document.getElementById('navbarProfileContainer') || (parent && parent.document.getElementById('navbarProfileContainer'));
+                const firstName = (document.getElementById('first_name') ? document.getElementById('first_name').value : '') || 'User';
+                if (navContainer) {
+                    navContainer.innerHTML = `
+                      <div id="navbarProfileImage" class="rounded-circle border border-white d-flex align-items-center justify-content-center text-white" 
+                           style="width: 36px; height: 36px; background: rgba(255, 255, 255, 0.25);" title="Profile">
+                        <i class="fas fa-user-circle fa-lg"></i>
+                      </div>
+                      <span class="text-sm fw-bold d-none d-md-inline text-white">${firstName}</span>
+                    `;
+                }
+
+                const updateMsg = document.getElementById('updateMessage');
+                if (updateMsg) {
+                    updateMsg.innerHTML = '<div class="alert alert-success text-center py-2"><i class="fas fa-check-circle mr-1"></i> Profile photo removed. Default avatar restored.</div>';
+                }
+            } else {
+                alert(data.message || 'Failed to remove profile photo.');
+                if (delBtn) {
+                    delBtn.disabled = false;
+                    delBtn.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Delete Profile Photo';
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Delete photo error:', err);
+            alert('Network error while removing photo.');
+            if (delBtn) {
+                delBtn.disabled = false;
+                delBtn.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Delete Profile Photo';
+            }
+        });
+    }
+    window.deleteProfilePhoto = deleteProfilePhoto;
 
     document.getElementById('updateProfileForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -105,7 +271,7 @@
 
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Updating...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving Profile...';
 
         fetch('/update_profile', {
             method: 'POST',
@@ -118,26 +284,28 @@
                 mainContent.innerHTML = html;
             }
 
-            const newImage = document.querySelector('.profile-preview');
-            if (newImage && newImage.src) {
-                const navbarImage = document.getElementById('navbarProfileImage');
-                if (navbarImage) {
-                    navbarImage.src = newImage.src + '?v=' + new Date().getTime(); // cache busting
-                }
+            // Immediately update the Navbar Profile Avatar
+            const newDoc = new DOMParser().parseFromString(html, "text/html");
+            const newImage = newDoc.querySelector('.profile-preview');
+            const navContainer = document.getElementById('navbarProfileContainer');
+            if (newImage && newImage.src && navContainer) {
+                const bustCache = newImage.src + (newImage.src.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+                navContainer.innerHTML = `
+                    <img src="${bustCache}" alt="Profile Photo" id="navbarProfileImage" class="rounded-circle border border-white" width="36" height="36" style="object-fit: cover;">
+                    <span class="text-sm fw-bold d-none d-md-inline text-white">${document.getElementById('first_name') ? document.getElementById('first_name').value : 'User'}</span>
+                `;
             }
         })
         .catch(err => {
             console.error('Profile update failed', err);
             const updateMessage = document.getElementById('updateMessage');
             if (updateMessage) {
-                updateMessage.innerHTML = `
-                    <div class="alert alert-danger text-center">Error updating profile</div>
-                `;
+                updateMessage.innerHTML = `<div class="alert alert-danger text-center">Error updating profile. Please try again.</div>`;
             }
         })
         .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Update Profile';
+            submitBtn.innerHTML = '<i class="fas fa-save mr-1"></i> Save Changes';
         });
     });
 </script>

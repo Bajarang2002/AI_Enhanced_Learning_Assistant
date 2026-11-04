@@ -3,84 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload and Evaluate Student Answer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Upload and Evaluate Answer Sheets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f7f7;
-            margin: 0;
-            padding: 0;
-        }
-
-        .eval-upload-wrapper {
-            display: flex;
-            justify-content: center;
-            padding-top: 60px;
-        }
-
-        .container1 {
+        .eval-card {
+            max-width: 850px;
             width: 100%;
-            max-width: 500px;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 150px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            padding: 35px 30px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .header-title {
+            color: #800000;
+            font-weight: 700;
             text-align: center;
+            margin-bottom: 8px;
         }
-
-        .container1 h2 {
-            color: maroon;
-            font-size: 26px;
-            margin-bottom: 30px;
+        .header-sub {
+            color: #666;
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 25px;
         }
-
-        .container1 input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+        .upload-box {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fafafa;
             margin-bottom: 20px;
-            font-size: 16px;
+            transition: border-color 0.3s;
         }
-
-        .container1 button {
-            width: 100%;
-            padding: 12px;
-            background-color: #8b0000;
+        .upload-box:hover {
+            border-color: #800000;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-evaluate {
+            background-color: #800000;
             color: white;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 10px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            transition: 0.3s;
+            width: 100%;
         }
-
-        .container1 button:hover {
-            background-color: #8b0000;
+        .btn-evaluate:hover {
+            background-color: #550000;
+            color: white;
         }
-
-        .container1 p {
-            font-size: 14px;
-            margin-top: 10px;
-            color: #777;
-        }
-
     </style>
 </head>
 <body>
-    <div class="eval-upload-wrapper">
-        <div class="container1">
-            <h2>Upload Student Answer</h2>
+<div class="container">
+    <div class="eval-card">
+        <h2 class="header-title"><i class="fas fa-balance-scale"></i> Dual Answer Sheet Evaluation</h2>
+        <p class="header-sub">Upload both the <strong>Correct Reference Answer Sheet</strong> and the <strong>Student Answer Sheet</strong>. The AI model compares both and computes an objective score with detailed conceptual feedback.</p>
 
-            <form id="evalAnswerForm" action="{{ url_for('eval_upload') }}" method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" required><br>
-                <button type="submit">Upload and Evaluate</button>
-            </form>
+        {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
 
-            <p>Make sure your file is in the correct format for evaluation.</p>
-        </div>
+        <form id="evalAnswerForm" action="{{ url_for('eval_upload') }}" method="POST" enctype="multipart/form-data">
+            <!-- 1. Correct / Reference Answer Sheet -->
+            <div class="upload-box" style="border-left: 6px solid #28a745;">
+                <label class="form-label text-success">
+                    <i class="fas fa-check-circle me-1"></i> 1. Correct / Reference Answer Sheet
+                </label>
+                <input type="file" name="ref_file" class="form-control mb-2" accept=".txt,.pdf">
+                <div class="form-text mb-2">Upload reference file (.pdf or .txt) OR paste reference answer key below:</div>
+                <textarea name="ref_text" class="form-control" rows="3" placeholder="Optional: Paste correct reference answer text directly here..."></textarea>
+            </div>
+
+            <!-- 2. Student Answer Sheet -->
+            <div class="upload-box" style="border-left: 6px solid #800000;">
+                <label class="form-label" style="color: #800000;">
+                    <i class="fas fa-user-edit me-1"></i> 2. Student Answer Sheet
+                </label>
+                <input type="file" name="student_file" class="form-control mb-2" accept=".txt,.pdf">
+                <div class="form-text mb-2">Upload student answer sheet (.pdf or .txt) OR paste student response below:</div>
+                <textarea name="student_text" class="form-control" rows="3" placeholder="Optional: Paste student's written response directly here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-evaluate">
+                <i class="fas fa-calculator me-2"></i> Compare & Generate Score
+            </button>
+        </form>
     </div>
+</div>
 </body>
 </html>

@@ -3,78 +3,250 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>AI Application - Home</title>
+    <title>AI-Enhanced Learning Assistant - Home</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
+    <!-- Top Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-container">
-            <div class="navbar-logo">
+            <a href="#home" class="navbar-logo">
+                <span class="logo-icon-badge"><i class="fas fa-graduation-cap"></i></span>
                 <strong>AI-Enhanced Learning Assistant</strong>
-            </div>
-            <ul class="navbar-links">
-                <li><a href="#home" class="active"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#about"><i class="fas fa-info-circle"></i> About Us</a></li>
-                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
-                <li><a href="{{ url_for('login') }}"><i class="fas fa-user"></i> Login</a></li>
+            </a>
+
+            <!-- Mobile Navigation Toggle -->
+            <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <ul class="navbar-links" id="navbarLinks">
+                <li><a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About Us</a></li>
+                <li><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+                {% if session.get('loggedin') %}
+                    <li><a href="{{ url_for('user_dashboard') }}" class="nav-btn-login"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-btn-signup"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="nav-btn-login"><i class="fas fa-user"></i> Login</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main id="home">
+        <!-- Hero Section with AI Network Constellation Background -->
         <section class="hero-section">
             <div class="hero-content">
-                <h1>AI-Enhanced Learning Assistant</h1>
+                <div class="hero-badge">
+                    <i class="fas fa-brain"></i> AI &amp; NLP Educational Platform
+                </div>
+
+                <h1 class="hero-title">AI-Enhanced Learning Assistant</h1>
+
                 <p class="abstract-text">
                     Our cutting-edge system leverages AI, NLP, and Machine Learning to automate the generation of context-based questions and the evaluation of student answers. It ensures fair, accurate, and efficient assessments by analyzing semantic relevance, detecting errors, and providing detailed feedback.
                 </p>
+
+                <div class="hero-actions">
+                    {% if session.get('loggedin') %}
+                        <a href="{{ url_for('user_dashboard') }}" class="btn-hero-primary">
+                            <i class="fas fa-th-large"></i> Go to Dashboard
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="btn-hero-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn-hero-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    {% endif %}
+                    <a href="#about" class="btn-hero-secondary">
+                        <i class="fas fa-info-circle"></i> About Us
+                    </a>
+                </div>
             </div>
         </section>
 
+        <!-- About Us Section -->
         <section id="about" class="info-section">
-            <div class="info-card">
-                <h2>About Us</h2>
-                <p>
-                    The AI-enhanced Question Answer Generation and Evaluation System is an educational assessment method providing answer generation, evaluation and scoring through Natural Language Processing (NLP) and Machine Learning (ML) as a core tool. This system analyzes a given text to extract pertinent answer questions and then grade students’ answers on their matching with predefined answer keys.
-                </p>
-                <p>
-                    NLP methods are used for concept extraction to achieve an equitable assessment model. Learning objectives and targeted question-writing strategies are applied to generate multiple question strategies. The evaluation module uses ML models for semantic similarity, analogy-based error detection, and accuracy-scoring. Feedback includes detailed explanations of student errors.
-                </p>
-                <p>
-                    Major assessment components involve preprocessing, semantic analysis, score feedback and automated scorecard creation—ensuring consistency, personalization, and scalability in evaluation.
-                </p>
+            <div class="info-container">
+                <div class="section-header">
+                    <span class="section-tag">Overview</span>
+                    <h2 class="section-title">About Us</h2>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Automated question generation and intelligent answer evaluation powered by NLP &amp; Machine Learning</p>
+                </div>
+
+                <div class="info-card">
+                    <p>
+                        The <strong>AI-enhanced Question Answer Generation and Evaluation System</strong> is an educational assessment method providing answer generation, evaluation, and scoring through <strong>Natural Language Processing (NLP)</strong> and <strong>Machine Learning (ML)</strong> as a core tool. This system analyzes a given text to extract pertinent questions and then grades students' answers on their semantic matching with predefined answer keys.
+                    </p>
+                    <p>
+                        NLP methods are used for concept extraction to achieve an equitable assessment model. Learning objectives and targeted question-writing strategies are applied to generate multiple question strategies. The evaluation module uses ML models for semantic similarity, analogy-based error detection, and accuracy scoring. Feedback includes detailed explanations of student errors.
+                    </p>
+                    <p>
+                        Major assessment components involve preprocessing, semantic analysis, score feedback, and automated scorecard creation—ensuring consistency, personalization, and scalability in evaluation.
+                    </p>
+                </div>
             </div>
         </section>
 
-        <section id="contact" class="info-section">
-            <div class="info-card">
-                <h2>Contact</h2>
-                <p>
-                    Have questions or need support? Reach out to us:
-                </p>
-                <ul class="contact-list">
-                    <li><i class="fas fa-envelope"></i> ai-learning-assistant2025@gmail.com </li>
-                    <li><i class="fas fa-phone"></i> +91 7218761150</li>
-                    <li><i class="fas fa-phone"></i> +91 7385311206</li>
-                    <li><i class="fas fa-phone"></i> +91 9607227223</li>
-                    <li><i class="fas fa-phone"></i> +91 7038225434</li>
-                    <li><i class="fas fa-phone"></i> +91 7385291039</li>
-                    <li><i class="fas fa-map-marker-alt"></i> DYPSN, Kolhapur 416007, India</li>
-                </ul>
+        <!-- Contact Section -->
+        <section id="contact" class="info-section alt-bg">
+            <div class="info-container">
+                <div class="section-header">
+                    <span class="section-tag">Get In Touch</span>
+                    <h2 class="section-title">Contact</h2>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Have questions or need support? Reach out to our technical team:</p>
+                </div>
+
+                <div class="info-card">
+                    <ul class="contact-list">
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Email Support</strong>
+                                <a href="mailto:ai-learning-assistant2025@gmail.com">ai-learning-assistant2025@gmail.com</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Helpline 1</strong>
+                                <a href="tel:+917218761150">+91 7218761150</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Helpline 2</strong>
+                                <a href="tel:+917385311206">+91 7385311206</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Helpline 3</strong>
+                                <a href="tel:+919607227223">+91 9607227223</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Helpline 4</strong>
+                                <a href="tel:+917038225434">+91 7038225434</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Helpline 5</strong>
+                                <a href="tel:+917385291039">+91 7385291039</a>
+                            </div>
+                        </li>
+                        <li style="grid-column: 1 / -1;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong style="display:block; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 2px;">Campus Location</strong>
+                                <span>DYPSN, Kolhapur 416007, Maharashtra, India</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </section>
     </main>
+
+    <!-- Professional Footer -->
+    <footer class="home-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-graduation-cap"></i> AI-Enhanced Learning Assistant
+            </div>
+            <p class="footer-text">
+                Intelligent assessment and automated answer evaluation powered by Natural Language Processing &amp; Machine Learning.
+            </p>
+            <div class="footer-bottom">
+                &copy; 2026 AI-Enhanced Learning Assistant. All rights reserved.
+            </div>
+        </div>
+    </footer>
 
     <!-- Back to Top Button -->
     <button id="backToTop" title="Back to Top"><i class="fas fa-chevron-up"></i></button>
 
     <script>
+        // Transparent Navbar on Hero & Scrolled Background on Scroll
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 40) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // Mobile Navbar Toggle
+        const toggleBtn = document.getElementById('navbarToggle');
+        const navLinks = document.getElementById('navbarLinks');
+        if (toggleBtn && navLinks) {
+            toggleBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('show');
+                });
+            });
+        }
+
+        // Active Link on Scroll
+        const sections = document.querySelectorAll('section[id], main[id]');
+        const navItems = document.querySelectorAll('.navbar-links a.nav-link');
+        window.addEventListener('scroll', () => {
+            let current = 'home';
+            const scrollPos = window.scrollY + 140;
+            const aboutSec = document.getElementById('about');
+            const contactSec = document.getElementById('contact');
+            
+            if (contactSec && scrollPos >= contactSec.offsetTop) {
+                current = 'contact';
+            } else if (aboutSec && scrollPos >= aboutSec.offsetTop) {
+                current = 'about';
+            } else {
+                current = 'home';
+            }
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${current}`) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Back to Top Button
         const btn = document.getElementById('backToTop');
-        window.onscroll = () => {
+        window.addEventListener('scroll', () => {
             btn.style.display = window.scrollY > 200 ? 'block' : 'none';
-        };
-        btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>

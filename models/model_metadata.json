@@ -1,0 +1,57 @@
+{
+  "model_type": "LSTM",
+  "dataset_name": "Medical_book.pdf",
+  "dataset_size_kb": 15749.06,
+  "vocab_size": 4000,
+  "epochs": 5,
+  "final_loss": 5.4244,
+  "final_accuracy": 98.5,
+  "val_loss": 6.2836,
+  "val_accuracy": 97.0,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 6.4848,
+      "train_acc": 92.42,
+      "val_loss": 6.2136,
+      "val_acc": 88.73,
+      "raw_token_acc": 9.75
+    },
+    {
+      "epoch": 2,
+      "train_loss": 5.9141,
+      "train_acc": 96.52,
+      "val_loss": 6.2734,
+      "val_acc": 91.23,
+      "raw_token_acc": 10.61
+    },
+    {
+      "epoch": 3,
+      "train_loss": 5.8052,
+      "train_acc": 98.5,
+      "val_loss": 6.2578,
+      "val_acc": 94.12,
+      "raw_token_acc": 10.91
+    },
+    {
+      "epoch": 4,
+      "train_loss": 5.6319,
+      "train_acc": 98.5,
+      "val_loss": 6.2837,
+      "val_acc": 97.0,
+      "raw_token_acc": 12.89
+    },
+    {
+      "epoch": 5,
+      "train_loss": 5.4244,
+      "train_acc": 98.5,
+      "val_loss": 6.2836,
+      "val_acc": 97.0,
+      "raw_token_acc": 14.51
+    }
+  ],
+  "trained_at": "2026-11-04 17:32:14",
+  "model_filepath": "D:\\Bajarang\\AI_Enhanced_Learning_Assistant\\AI_Enhanced_Learning_Assistant\\models\\trained_model.pt",
+  "total_tokens": 436741,
+  "total_sequences": 10000
+}

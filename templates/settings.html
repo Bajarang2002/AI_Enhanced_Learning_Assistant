@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings - AI Learning Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .settings-wrapper {
+      max-width: 960px;
+      width: 100%;
+      margin: 15px auto;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    .settings-card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    .settings-nav {
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+      padding: 20px 15px;
+    }
+    .settings-nav .nav-link {
+      color: #475569;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .settings-nav .nav-link:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .settings-nav .nav-link.active {
+      background: #800000;
+      color: #ffffff;
+    }
+    .theme-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .theme-card:hover {
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+    }
+    .theme-card.active {
+      border-color: #800000;
+      background: #fff5f5;
+    }
+    .theme-preview {
+      height: 48px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="settings-wrapper">
+  <!-- Header -->
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1" style="color: #800000;">
+      <i class="fas fa-sliders-h me-2"></i> Application Settings & Preferences
+    </h2>
+    <p class="text-muted text-sm mb-0">Manage your account security, JWT authentication session, theme styling, and AI defaults.</p>
+  </div>
+
+  <div class="settings-card">
+    <div class="row g-0">
+      <!-- Left Tabs Navigation -->
+      <div class="col-md-4 settings-nav">
+        <div class="nav flex-column nav-pills" id="settingsTab" role="tablist">
+          <button class="nav-link active text-start" id="tab-security-btn" data-bs-toggle="pill" data-bs-target="#tab-security" type="button" role="tab">
+            <i class="fas fa-shield-alt w-5"></i> Security & Password
+          </button>
+          <button class="nav-link text-start" id="tab-theme-btn" data-bs-toggle="pill" data-bs-target="#tab-theme" type="button" role="tab">
+            <i class="fas fa-palette w-5"></i> Appearance & Themes
+          </button>
+          <button class="nav-link text-start" id="tab-preferences-btn" data-bs-toggle="pill" data-bs-target="#tab-preferences" type="button" role="tab">
+            <i class="fas fa-cog w-5"></i> Model & App Defaults
+          </button>
+          <button class="nav-link text-start" id="tab-info-btn" data-bs-toggle="pill" data-bs-target="#tab-info" type="button" role="tab">
+            <i class="fas fa-info-circle w-5"></i> System & JWT Info
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Content Panes -->
+      <div class="col-md-8 p-4">
+        <div class="tab-content" id="settingsTabContent">
+          
+          <!-- TAB 1: RESET PASSWORD -->
+          <div class="tab-pane fade show active" id="tab-security" role="tabpanel">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-key text-warning me-2"></i> Reset / Change Password</h5>
+            <p class="text-muted text-sm mb-4">Ensure your account is using a strong password. Changes take effect immediately across all JWT sessions.</p>
+
+            <div id="pwdAlert" class="alert d-none" role="alert"></div>
+
+            <form id="changePasswordForm">
+              <div class="mb-3">
+                <label class="form-label text-sm fw-semibold">Current Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" id="current_password" name="current_password" class="form-control" required placeholder="Enter current password">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label text-sm fw-semibold">New Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock-open"></i></span>
+                  <input type="password" id="new_password" name="new_password" class="form-control" required placeholder="Minimum 6 characters">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-sm fw-semibold">Confirm New Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+                  <input type="password" id="confirm_password" name="confirm_password" class="form-control" required placeholder="Re-type new password">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-danger px-4 py-2 font-semibold" style="background-color: #800000; border-color: #800000;">
+                <i class="fas fa-save me-1"></i> Update Password
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 2: APPEARANCE & THEMES -->
+          <div class="tab-pane fade" id="tab-theme" role="tabpanel">
+            <h5 class="fw-bold mb-2 text-dark"><i class="fas fa-swatchbook text-primary me-2"></i> Application Theme</h5>
+            <p class="text-muted text-sm mb-4">Choose your preferred workspace aesthetic. The selection applies instantly and persists across visits.</p>
+
+            <div class="row g-3 mb-4">
+              <!-- Theme 1: Academic Crimson -->
+              <div class="col-md-6">
+                <div class="theme-card active" id="theme-crimson" onclick="setAppTheme('crimson')">
+                  <div class="theme-preview">
+                    <div style="flex: 2; background: #800000; border-radius: 6px 0 0 6px;"></div>
+                    <div style="flex: 4; background: #fdfdfd; border: 1px solid #e2e8f0; border-radius: 0 6px 6px 0;"></div>
+                  </div>
+                  <strong class="d-block text-sm">Academic Crimson</strong>
+                  <small class="text-muted">Classic university maroon & gold accents</small>
+                </div>
+              </div>
+
+              <!-- Theme 2: Modern Slate & Indigo -->
+              <div class="col-md-6">
+                <div class="theme-card" id="theme-indigo" onclick="setAppTheme('indigo')">
+                  <div class="theme-preview">
+                    <div style="flex: 2; background: #0f172a; border-radius: 6px 0 0 6px;"></div>
+                    <div style="flex: 4; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0 6px 6px 0;"></div>
+                  </div>
+                  <strong class="d-block text-sm">Modern Indigo SaaS</strong>
+                  <small class="text-muted">High-contrast executive slate & indigo</small>
+                </div>
+              </div>
+
+              <!-- Theme 3: Ocean Navy -->
+              <div class="col-md-6">
+                <div class="theme-card" id="theme-ocean" onclick="setAppTheme('ocean')">
+                  <div class="theme-preview">
+                    <div style="flex: 2; background: #0c4a6e; border-radius: 6px 0 0 6px;"></div>
+                    <div style="flex: 4; background: #f0f9ff; border: 1px solid #e2e8f0; border-radius: 0 6px 6px 0;"></div>
+                  </div>
+                  <strong class="d-block text-sm">Deep Oceanic Navy</strong>
+                  <small class="text-muted">Deep marine blue & cyan highlights</small>
+                </div>
+              </div>
+
+              <!-- Theme 4: Minimalist Light -->
+              <div class="col-md-6">
+                <div class="theme-card" id="theme-minimal" onclick="setAppTheme('minimal')">
+                  <div class="theme-preview">
+                    <div style="flex: 2; background: #334155; border-radius: 6px 0 0 6px;"></div>
+                    <div style="flex: 4; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 0 6px 6px 0;"></div>
+                  </div>
+                  <strong class="d-block text-sm">Clean Minimalist Light</strong>
+                  <small class="text-muted">Ultra-crisp layout with emerald badges</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 text-sm text-muted">
+              <i class="fas fa-info-circle text-primary me-1"></i> Themes update your dashboard top bar, sidebar active indicators, buttons, and card borders.
+            </div>
+          </div>
+
+          <!-- TAB 3: APP PREFERENCES -->
+          <div class="tab-pane fade" id="tab-preferences" role="tabpanel">
+            <h5 class="fw-bold mb-2 text-dark"><i class="fas fa-sliders-h text-success me-2"></i> AI Model & App Preferences</h5>
+            <p class="text-muted text-sm mb-4">Customize the default parameters for automated question formulation and answer grading.</p>
+
+            <form id="appPreferencesForm">
+              <div class="mb-3">
+                <label class="form-label text-sm fw-semibold">Default Neural Architecture</label>
+                <select class="form-select" id="pref_model">
+                  <option value="LSTM" selected>LSTM (Long Short-Term Memory) - Recommended</option>
+                  <option value="RNN">RNN (Recurrent Neural Network)</option>
+                  <option value="BiLSTM">BiLSTM (Bidirectional Sequential Model)</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label text-sm fw-semibold">Default Question Count</label>
+                <select class="form-select" id="pref_noq">
+                  <option value="3">3 Questions (Quick Quiz)</option>
+                  <option value="5" selected>5 Questions (Standard Assessment)</option>
+                  <option value="10">10 Questions (Comprehensive Exam)</option>
+                  <option value="15">15 Questions (Full Test)</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-sm fw-semibold">Answer Evaluation Sensitivity</label>
+                <select class="form-select" id="pref_strictness">
+                  <option value="lenient">Lenient (Emphasizes general conceptual grasp)</option>
+                  <option value="balanced" selected>Balanced (Standard TF-IDF + Keyword Coverage)</option>
+                  <option value="strict">Strict (Demands exact technical terminology and completeness)</option>
+                </select>
+              </div>
+
+              <button type="button" onclick="saveAppPreferences()" class="btn btn-dark px-4 py-2 font-semibold">
+                <i class="fas fa-check me-1"></i> Save Preferences
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 4: SYSTEM INFO -->
+          <div class="tab-pane fade" id="tab-info" role="tabpanel">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-server text-info me-2"></i> System & Security Status</h5>
+            
+            <table class="table table-bordered text-sm">
+              <tbody>
+                <tr>
+                  <td><strong>Authentication Method:</strong></td>
+                  <td><span class="badge bg-success">JWT (JSON Web Token)</span> HS256 HMAC-SHA256 Encrypted</td>
+                </tr>
+                <tr>
+                  <td><strong>Token Validity:</strong></td>
+                  <td>24 Hours (Automatic Token Refresh Supported)</td>
+                </tr>
+                <tr>
+                  <td><strong>Database Engine:</strong></td>
+                  <td><span class="badge bg-primary">PostgreSQL</span> (Fallback SQLite Ready)</td>
+                </tr>
+                <tr>
+                  <td><strong>Deep Learning Backend:</strong></td>
+                  <td>PyTorch 2.14 Sequential Tensors (RNN, LSTM, BiLSTM)</td>
+                </tr>
+                <tr>
+                  <td><strong>Active User:</strong></td>
+                  <td>{{ session.get('first_name', 'User') }} (ID: {{ session.get('user_id', 1) }})</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Handle Change Password Form
+  const pwdForm = document.getElementById('changePasswordForm');
+  if (pwdForm) {
+    pwdForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const curr = document.getElementById('current_password').value;
+      const newP = document.getElementById('new_password').value;
+      const confP = document.getElementById('confirm_password').value;
+      const alertBox = document.getElementById('pwdAlert');
+
+      if (newP !== confP) {
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = 'New password and confirmation do not match.';
+        alertBox.classList.remove('d-none');
+        return;
+      }
+
+      if (newP.length < 6) {
+        alertBox.className = 'alert alert-warning';
+        alertBox.textContent = 'Password must be at least 6 characters long.';
+        alertBox.classList.remove('d-none');
+        return;
+      }
+
+      fetch('/api/change_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: curr, new_password: newP })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alertBox.className = 'alert alert-success';
+          alertBox.textContent = data.message || 'Password updated successfully!';
+          alertBox.classList.remove('d-none');
+          pwdForm.reset();
+        } else {
+          alertBox.className = 'alert alert-danger';
+          alertBox.textContent = data.error || 'Failed to update password.';
+          alertBox.classList.remove('d-none');
+        }
+      })
+      .catch(err => {
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = 'Network or server error updating password.';
+        alertBox.classList.remove('d-none');
+      });
+    });
+  }
+
+  // Theme Switcher Function - Fully accessible across the application
+  function setAppTheme(themeName) {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+    const target = document.getElementById('theme-' + themeName);
+    if (target) target.classList.add('active');
+
+    localStorage.setItem('app_theme', themeName);
+
+    // Apply color palette to current document and parent window
+    document.documentElement.setAttribute('data-theme', themeName);
+    document.body.setAttribute('data-theme', themeName);
+
+    if (typeof window.applyTheme === 'function') {
+      window.applyTheme(themeName);
+    }
+    if (window.parent && typeof window.parent.applyTheme === 'function' && window.parent !== window) {
+      window.parent.applyTheme(themeName);
+    }
+  }
+  window.setAppTheme = setAppTheme;
+
+  function saveAppPreferences() {
+    const model = document.getElementById('pref_model').value;
+    const noq = document.getElementById('pref_noq').value;
+    const strictness = document.getElementById('pref_strictness').value;
+
+    localStorage.setItem('pref_model', model);
+    localStorage.setItem('pref_noq', noq);
+    localStorage.setItem('pref_strictness', strictness);
+
+    alert('Preferences saved successfully!');
+  }
+
+  // Load saved theme on render
+  const savedTheme = localStorage.getItem('app_theme') || 'crimson';
+  setAppTheme(savedTheme);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

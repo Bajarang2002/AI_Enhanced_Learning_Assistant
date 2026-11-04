@@ -3,110 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evaluation Result</title>
+  <title>Answer Evaluation Result</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: #333;
-      background-color: #f9f9f9;
-      height: 100%;
-      overflow: hidden;
+      background-color: #f7f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px 15px;
     }
-
-    .result-wrapper {
-      height: 100%;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow-y: auto;
-    }
-
     .result-container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 35px 30px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
     }
-
-    .result-container h2 {
-      text-align: center;
-      margin-bottom: 25px;
+    .score-badge {
+      font-size: 48px;
+      font-weight: 800;
       color: #800000;
     }
-
-    .result-section {
+    .grade-badge {
+      font-size: 18px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      display: inline-block;
       margin-bottom: 20px;
     }
-
-    .result-section strong {
-      display: block;
-      margin-bottom: 8px;
-      color: #444;
-    }
-
-    .result-section pre {
-      background-color: #f1f1f1;
-      padding: 12px;
-      border-radius: 5px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-family: inherit;
-    }
-
-    .download-btn {
-      display: block;
-      margin: 30px auto 0;
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
+    .stat-card {
+      background: #fbfbfb;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 15px;
       text-align: center;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
     }
-
-    .download-btn:hover {
-      background-color: #0056b3;
+    .stat-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
     }
-
-    @media (max-width: 600px) {
-      .result-container {
-        padding: 20px;
-      }
+    .concept-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      margin: 3px;
+    }
+    .concept-matched {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .concept-missing {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .text-box {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .btn-maroon {
+      background-color: #800000;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .btn-maroon:hover {
+      background-color: #550000;
+      color: white;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; padding: 0; }
+      .result-container { box-shadow: none; }
     }
   </style>
 </head>
 <body>
-  <div class="result-wrapper">
-    <div class="result-container">
-      <h2>Evaluation Result</h2>
 
-      {% autoescape true %}
-      <div class="result-section">
-        <strong>Student Answer:</strong>
-        <pre>{{ student_answer }}</pre>
+<div class="result-container">
+  <!-- Title & Grade Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold" style="color: #800000;">
+      <i class="fas fa-clipboard-check me-2"></i> Evaluation Result & Score Report
+    </h2>
+    <div class="score-badge mt-2">{{ score }} <span style="font-size: 24px; color: #666;">/ 10</span></div>
+    <div>
+      <span class="grade-badge bg-success text-white">
+        <i class="fas fa-award me-1"></i> {{ grade or 'Grade A' }} ({{ score_100 or (score * 10) }}%)
+      </span>
+    </div>
+    <p class="lead text-muted">{{ feedback_summary }}</p>
+  </div>
+
+  <!-- Score Breakdown Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <small class="text-muted d-block text-uppercase fw-bold">Semantic Similarity</small>
+        <div class="stat-val text-primary">{{ similarity_pct }}%</div>
+        <small class="text-muted">TF-IDF Vector Cosine</small>
       </div>
-
-      <div class="result-section">
-        <strong>Reference Answer:</strong>
-        <pre>{{ reference_answer }}</pre>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <small class="text-muted d-block text-uppercase fw-bold">Keyword Coverage</small>
+        <div class="stat-val text-success">{{ coverage_pct }}%</div>
+        <small class="text-muted">Reference Domain Concepts</small>
       </div>
-      {% endautoescape %}
-
-      <div class="result-section">
-        <strong>Score:</strong>
-        <pre>{{ score }}/10</pre>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <small class="text-muted d-block text-uppercase fw-bold">Completeness</small>
+        <div class="stat-val text-warning">{{ completeness_score }}/10</div>
+        <small class="text-muted">Length & Elaboration</small>
       </div>
-
-      <a class="download-btn" href="{{ url_for('download_result', student_answer=student_answer, reference_answer=reference_answer, score=score) }}">
-        Download Result as PDF
-      </a>
     </div>
   </div>
+
+  <!-- Concept Matching Analysis -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+      <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-tags me-2"></i> Conceptual Coverage Analysis</h5>
+      
+      <div class="mb-3">
+        <strong class="text-success d-block mb-1"><i class="fas fa-check-circle me-1"></i> Matched Core Concepts:</strong>
+        {% if matched_concepts and matched_concepts|length > 0 %}
+          {% for concept in matched_concepts %}
+            <span class="concept-pill concept-matched">{{ concept }}</span>
+          {% endfor %}
+        {% else %}
+          <span class="text-muted">No exact domain concepts matched.</span>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <strong class="text-danger d-block mb-1"><i class="fas fa-times-circle me-1"></i> Missing Concepts from Answer Key:</strong>
+        {% if missing_concepts and missing_concepts|length > 0 %}
+          {% for concept in missing_concepts %}
+            <span class="concept-pill concept-missing">{{ concept }}</span>
+          {% endfor %}
+        {% else %}
+          <span class="text-success">None! All key concepts were addressed.</span>
+        {% endif %}
+      </div>
+
+      {% if recommendations and recommendations|length > 0 %}
+      <div class="mt-3 p-3 bg-light rounded">
+        <strong class="text-dark d-block mb-1"><i class="fas fa-lightbulb text-warning me-1"></i> Recommendations for Improvement:</strong>
+        <ul class="mb-0 ps-3">
+          {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Side-by-Side Answers Comparison -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-3">
+      <h6 class="fw-bold text-success"><i class="fas fa-check-square me-1"></i> Correct / Reference Answer Sheet:</h6>
+      <div class="text-box">{{ reference_answer }}</div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <h6 class="fw-bold" style="color: #800000;"><i class="fas fa-user-edit me-1"></i> Student's Answer Sheet:</h6>
+      <div class="text-box">{{ student_answer }}</div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="text-center no-print">
+    <button onclick="window.print()" class="btn btn-outline-dark me-2">
+      <i class="fas fa-print me-1"></i> Print / Save as PDF
+    </button>
+    <a href="{{ url_for('eval_upload') }}" class="btn btn-maroon">
+      <i class="fas fa-redo me-1"></i> Evaluate Another Answer
+    </a>
+  </div>
+</div>
+
 </body>
 </html>
