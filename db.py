@@ -3,6 +3,7 @@ import json
 import logging
 import sqlite3
 import tempfile
+from urllib.parse import urlparse, unquote, quote_plus
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -16,12 +17,65 @@ else:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# PostgreSQL Configuration (Loaded from .env environment variables)
+# =============================================================================
+# Database URL & PostgreSQL Configuration
+# =============================================================================
 PG_HOST = os.environ.get('PG_HOST', 'localhost')
 PG_PORT = os.environ.get('PG_PORT', '5432')
 PG_USER = os.environ.get('PG_USER', 'postgres')
 PG_PASSWORD = os.environ.get('PG_PASSWORD', '')
 PG_DATABASE = os.environ.get('PG_DATABASE', 'learning_assistant_db')
+
+def get_database_url():
+    """
+    Returns the active PostgreSQL DATABASE_URL.
+    Reads from os.environ['DATABASE_URL'] or dynamically builds a standard connection URL.
+    Normalizes 'postgres://' to 'postgresql://'.
+    """
+    raw_url = os.environ.get('DATABASE_URL', '').strip()
+    if raw_url:
+        if raw_url.startswith('postgres://'):
+            raw_url = raw_url.replace('postgres://', 'postgresql://', 1)
+        return raw_url
+    
+    # Construct Database URL from credentials
+    pwd = f":{quote_plus(PG_PASSWORD)}" if PG_PASSWORD else ""
+    return f"postgresql://{PG_USER}{pwd}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+
+def replace_database_url(new_db_name, url=None):
+    """
+    Replaces the database name in the Database URL whenever required.
+    Allows dynamic switching between application DB, admin DB, or test DBs.
+    """
+    target = url or get_database_url()
+    try:
+        parsed = urlparse(target)
+        new_path = f"/{new_db_name}"
+        if parsed.query:
+            new_path += f"?{parsed.query}"
+        return f"{parsed.scheme}://{parsed.netloc}{new_path}"
+    except Exception:
+        pwd = f":{quote_plus(PG_PASSWORD)}" if PG_PASSWORD else ""
+        return f"postgresql://{PG_USER}{pwd}@{PG_HOST}:{PG_PORT}/{new_db_name}"
+
+def get_admin_database_url(admin_db='postgres'):
+    """Returns Database URL with the target database replaced by the admin database name."""
+    return replace_database_url(admin_db)
+
+def get_database_name(url=None):
+    """Extracts target database name from Database URL."""
+    target = url or get_database_url()
+    try:
+        parsed = urlparse(target)
+        name = parsed.path.lstrip('/')
+        if '?' in name:
+            name = name.split('?')[0]
+        return name or PG_DATABASE
+    except Exception:
+        return PG_DATABASE
+
+# Export active DATABASE_URL
+DATABASE_URL = get_database_url()
 
 SQLITE_FALLBACK_DB = os.path.join(os.path.dirname(__file__), 'database.db')
 
@@ -49,69 +103,71 @@ except ImportError:
 
 
 def get_pg_admin_connection():
-    """Connect to postgres administrative database to create application db if needed."""
+    """Connect to administrative database using Database URL to create application db if needed."""
     if not psycopg2:
         return None
+    admin_url = get_admin_database_url('postgres')
     try:
-        conn = psycopg2.connect(
-            host=PG_HOST,
-            port=PG_PORT,
-            user=PG_USER,
-            password=PG_PASSWORD,
-            database='postgres',
-            connect_timeout=3
-        )
+        conn = psycopg2.connect(admin_url, connect_timeout=5)
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         return conn
     except Exception as e:
-        logger.warning(f"Could not connect to PostgreSQL admin DB: {e}")
-        return None
+        logger.warning(f"Could not connect to PostgreSQL admin DB via URL ({admin_url}): {e}")
+        # Secondary fallback with individual params if URL format is rejected by server
+        try:
+            conn = psycopg2.connect(
+                host=PG_HOST,
+                port=PG_PORT,
+                user=PG_USER,
+                password=PG_PASSWORD,
+                database='postgres',
+                connect_timeout=3
+            )
+            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+            return conn
+        except Exception:
+            return None
 
 
 def ensure_postgres_database_exists():
     """Ensure that the target PostgreSQL database exists; if not, create it."""
     if not psycopg2:
         return False
+    target_db = get_database_name()
     try:
         admin_conn = get_pg_admin_connection()
         if not admin_conn:
             return False
         with admin_conn.cursor() as cur:
-            cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s", (PG_DATABASE,))
+            cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s", (target_db,))
             exists = cur.fetchone()
             if not exists:
-                logger.info(f"Database '{PG_DATABASE}' not found. Creating it...")
-                cur.execute(f'CREATE DATABASE "{PG_DATABASE}"')
-                logger.info(f"Database '{PG_DATABASE}' created successfully.")
+                logger.info(f"Database '{target_db}' not found. Creating it...")
+                cur.execute(f'CREATE DATABASE "{target_db}"')
+                logger.info(f"Database '{target_db}' created successfully.")
         admin_conn.close()
         return True
     except Exception as e:
-        logger.warning(f"Failed to ensure PostgreSQL database '{PG_DATABASE}': {e}")
+        logger.warning(f"Failed to ensure PostgreSQL database '{target_db}': {e}")
         return False
 
 
 def get_db_connection():
     """
     Get a database connection.
-    Attempts PostgreSQL first. If PostgreSQL server is unreachable, falls back to SQLite
+    Attempts PostgreSQL using DATABASE_URL first. If unreachable, falls back to SQLite
     to prevent application crash, while notifying in logs.
     """
     global USE_POSTGRES
 
     if USE_POSTGRES and psycopg2:
+        db_url = get_database_url()
         try:
             ensure_postgres_database_exists()
-            conn = psycopg2.connect(
-                host=PG_HOST,
-                port=PG_PORT,
-                user=PG_USER,
-                password=PG_PASSWORD,
-                database=PG_DATABASE,
-                connect_timeout=3
-            )
+            conn = psycopg2.connect(db_url, connect_timeout=5)
             return conn, 'postgres'
         except Exception as e:
-            logger.warning(f"PostgreSQL connection failed ({e}). Falling back to local SQLite: {SQLITE_FALLBACK_DB}")
+            logger.warning(f"PostgreSQL connection failed via DATABASE_URL ({e}). Falling back to local SQLite: {SQLITE_FALLBACK_DB}")
             # Do not permanently disable USE_POSTGRES so next call can retry
     
     # SQLite Fallback Connection

@@ -21,21 +21,25 @@ def main():
     print("=" * 60)
 
     from db import (
-        PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DATABASE,
+        DATABASE_URL, PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DATABASE,
+        get_database_url, get_admin_database_url, get_database_name,
         ensure_postgres_database_exists, init_db, get_db_connection
     )
 
     print(f"PostgreSQL Configuration:")
-    print(f"  Host:     {PG_HOST}")
-    print(f"  Port:     {PG_PORT}")
-    print(f"  User:     {PG_USER}")
-    print(f"  Database: {PG_DATABASE}")
+    print(f"  Database URL: {get_database_url()}")
+    print(f"  Target DB:    {get_database_name()}")
+    print(f"  Admin URL:    {get_admin_database_url('postgres')}")
+    print(f"  Host:         {PG_HOST}")
+    print(f"  Port:         {PG_PORT}")
+    print(f"  User:         {PG_USER}")
     print("-" * 60)
 
-    print("Step 1: Ensuring database exists...")
+    print("Step 1: Ensuring database exists via Database URL...")
     db_created = ensure_postgres_database_exists()
+    target_name = get_database_name()
     if db_created:
-        print(f"  -> Database '{PG_DATABASE}' is ready.")
+        print(f"  -> Database '{target_name}' is ready.")
     else:
         print(f"  -> Could not verify admin database creation. Will attempt direct connection...")
 

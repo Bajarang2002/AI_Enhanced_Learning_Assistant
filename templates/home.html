@@ -61,19 +61,13 @@
                 <div class="hero-actions">
                     {% if session.get('loggedin') %}
                         <a href="{{ url_for('user_dashboard') }}" class="btn-hero-primary">
-                            <i class="fas fa-th-large"></i> Go to Dashboard
-                        </a>
-                        <a href="{{ url_for('logout') }}" class="btn-hero-secondary">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                            <i class="fas fa-arrow-right"></i> Getting Started
                         </a>
                     {% else %}
                         <a href="{{ url_for('login') }}" class="btn-hero-primary">
-                            <i class="fas fa-sign-in-alt"></i> Login
+                            <i class="fas fa-arrow-right"></i> Getting Started
                         </a>
                     {% endif %}
-                    <a href="#about" class="btn-hero-secondary">
-                        <i class="fas fa-info-circle"></i> About Us
-                    </a>
                 </div>
             </div>
         </section>
